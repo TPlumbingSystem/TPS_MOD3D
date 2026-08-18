@@ -1104,6 +1104,40 @@ def main():
         }});
 
         setTimeout(tocarAnimacaoCorte, 600);
+
+        // giro inicial da camera: uma volta completa em torno do modelo ao
+        // carregar a pagina (efeito de apresentacao), parando de volta no
+        // angulo padrao do Plotly. Cancela sozinho se o usuario arrastar a
+        // cena no meio do giro (senao a rotacao automatica brigaria com o
+        // orbit control do usuario).
+        var CAMERA_RAIO_GIRO = Math.sqrt(1.25 * 1.25 + 1.25 * 1.25);
+        var CAMERA_Z_GIRO = 1.25;
+        var CAMERA_ANGULO_INICIAL_GIRO = Math.atan2(1.25, 1.25);
+        var N_PASSOS_GIRO = 90;
+        var DURACAO_PASSO_GIRO = 70;  // ms -> ~6.3s pra volta completa
+        var giroCancelado = false;
+        gd.addEventListener('mousedown', function() {{ giroCancelado = true; }});
+        gd.addEventListener('touchstart', function() {{ giroCancelado = true; }});
+        gd.addEventListener('wheel', function() {{ giroCancelado = true; }});
+
+        function tocarGiroInicial() {{
+            var passo = 0;
+            function girar() {{
+                if (giroCancelado) return;
+                var angulo = CAMERA_ANGULO_INICIAL_GIRO + (passo / N_PASSOS_GIRO) * 2 * Math.PI;
+                Plotly.relayout(gd, {{
+                    'scene.camera.eye': {{
+                        x: CAMERA_RAIO_GIRO * Math.cos(angulo),
+                        y: CAMERA_RAIO_GIRO * Math.sin(angulo),
+                        z: CAMERA_Z_GIRO,
+                    }},
+                }});
+                passo++;
+                if (passo <= N_PASSOS_GIRO) {{ setTimeout(girar, DURACAO_PASSO_GIRO); }}
+            }}
+            girar();
+        }}
+        setTimeout(tocarGiroInicial, 400);
     }})();
     """
 
