@@ -824,7 +824,10 @@ def main():
                 x=0.98, y=0.28, xanchor="right", yanchor="top",
                 bgcolor=MARCA_ROXO_ESCURO, bordercolor=MARCA_ROXO, borderwidth=1.5,
                 font=dict(color=MARCA_CINZA_CLARO, family=MARCA_FONTE),
-                buttons=[dict(label="Animação: ON", method="skip")],
+                buttons=[
+                    dict(label="Corte: ON", method="skip"),
+                    dict(label="Girar: ON", method="skip"),
+                ],
             ),
         ],
         sliders=[
@@ -962,9 +965,10 @@ def main():
         // varios botoes, ja que sao uma ESCOLHA entre opcoes, nao um
         // liga/desliga de verdade. indiceMenu = posicao em updatemenus,
         // usado pra atualizar o texto do proprio botao depois do clique.
-        function atualizarLabelBotao(indiceMenu, texto) {{
+        function atualizarLabelBotao(indiceMenu, texto, indiceBotao) {{
+            indiceBotao = indiceBotao || 0;
             var patch = {{}};
-            patch['updatemenus[' + indiceMenu + '].buttons[0].label'] = texto;
+            patch['updatemenus[' + indiceMenu + '].buttons[' + indiceBotao + '].label'] = texto;
             Plotly.relayout(gd, patch);
         }}
 
@@ -1072,18 +1076,75 @@ def main():
         function alternarAnimacao() {{
             if (animandoCorte) {{
                 pararAnimacaoCorte();
-                atualizarLabelBotao(7, 'Animação: OFF');
+                atualizarLabelBotao(7, 'Corte: OFF', 0);
             }} else {{
                 tocarAnimacaoCorte();
-                atualizarLabelBotao(7, 'Animação: ON');
+                atualizarLabelBotao(7, 'Corte: ON', 0);
             }}
         }}
+
+        // giro continuo da camera em torno do modelo -- comeca sozinho ao
+        // carregar a pagina (efeito de apresentacao) e roda enquanto ligado.
+        // Botao "Girar" (mesma linha do "Corte") liga/desliga a qualquer
+        // momento. Se o usuario arrastar/rolar a cena manualmente o giro
+        // para sozinho e o botao sincroniza pra "OFF" (senao a rotacao
+        // automatica ficaria brigando com o orbit control do usuario).
+        var CAMERA_RAIO_GIRO = Math.sqrt(1.25 * 1.25 + 1.25 * 1.25);
+        var CAMERA_Z_GIRO = 1.25;
+        var ANGULO_PASSO_GIRO = (2 * Math.PI) / 90;  // 90 passos por volta
+        var DURACAO_PASSO_GIRO = 70;  // ms -> ~6.3s por volta completa
+        var anguloGiroAtual = Math.atan2(1.25, 1.25);
+        var girando = false;
+        var timerGiro = null;
+
+        function pararGiro() {{
+            if (timerGiro) {{ clearTimeout(timerGiro); timerGiro = null; }}
+            girando = false;
+        }}
+
+        function tocarGiro() {{
+            girando = true;
+            function passo() {{
+                if (!girando) return;
+                anguloGiroAtual = (anguloGiroAtual + ANGULO_PASSO_GIRO) % (2 * Math.PI);
+                Plotly.relayout(gd, {{
+                    'scene.camera.eye': {{
+                        x: CAMERA_RAIO_GIRO * Math.cos(anguloGiroAtual),
+                        y: CAMERA_RAIO_GIRO * Math.sin(anguloGiroAtual),
+                        z: CAMERA_Z_GIRO,
+                    }},
+                }});
+                timerGiro = setTimeout(passo, DURACAO_PASSO_GIRO);
+            }}
+            passo();
+        }}
+
+        function alternarGiro() {{
+            if (girando) {{
+                pararGiro();
+                atualizarLabelBotao(7, 'Girar: OFF', 1);
+            }} else {{
+                tocarGiro();
+                atualizarLabelBotao(7, 'Girar: ON', 1);
+            }}
+        }}
+
+        function cancelarGiroPorInteracao() {{
+            if (girando) {{
+                pararGiro();
+                atualizarLabelBotao(7, 'Girar: OFF', 1);
+            }}
+        }}
+        gd.addEventListener('mousedown', cancelarGiroPorInteracao);
+        gd.addEventListener('touchstart', cancelarGiroPorInteracao);
+        gd.addEventListener('wheel', cancelarGiroPorInteracao);
 
         // menus tematicos (escolha entre opcoes: direcao do corte, cor,
         // tema) continuam com varios botoes -- roteados pela posicao do menu
         // (y), ja que ev.active vem 0/1/2 dentro do grupo. Os liga/desliga
-        // de verdade (Solido/Topografia/Pontos de Campo/Animação) agora sao
-        // menu de 1 botao so (ev.active sempre 0), tratado como alternancia.
+        // de verdade (Solido/Topografia/Pontos de Campo) sao menu de 1
+        // botao so (ev.active sempre 0), tratado como alternancia; Corte e
+        // Girar dividem a mesma linha (ev.active 0=Corte, 1=Girar).
         gd.on('plotly_buttonclicked', function(ev) {{
             if (typeof ev.active !== 'number' || !ev.menu) return;
             if (Math.abs(ev.menu.y - 0.98) < 0.001) {{
@@ -1099,45 +1160,12 @@ def main():
             }} else if (Math.abs(ev.menu.y - 0.38) < 0.001) {{
                 alternarPontosCampo();
             }} else if (Math.abs(ev.menu.y - 0.28) < 0.001) {{
-                alternarAnimacao();
+                if (ev.active === 0) {{ alternarAnimacao(); }} else {{ alternarGiro(); }}
             }}
         }});
 
         setTimeout(tocarAnimacaoCorte, 600);
-
-        // giro inicial da camera: uma volta completa em torno do modelo ao
-        // carregar a pagina (efeito de apresentacao), parando de volta no
-        // angulo padrao do Plotly. Cancela sozinho se o usuario arrastar a
-        // cena no meio do giro (senao a rotacao automatica brigaria com o
-        // orbit control do usuario).
-        var CAMERA_RAIO_GIRO = Math.sqrt(1.25 * 1.25 + 1.25 * 1.25);
-        var CAMERA_Z_GIRO = 1.25;
-        var CAMERA_ANGULO_INICIAL_GIRO = Math.atan2(1.25, 1.25);
-        var N_PASSOS_GIRO = 90;
-        var DURACAO_PASSO_GIRO = 70;  // ms -> ~6.3s pra volta completa
-        var giroCancelado = false;
-        gd.addEventListener('mousedown', function() {{ giroCancelado = true; }});
-        gd.addEventListener('touchstart', function() {{ giroCancelado = true; }});
-        gd.addEventListener('wheel', function() {{ giroCancelado = true; }});
-
-        function tocarGiroInicial() {{
-            var passo = 0;
-            function girar() {{
-                if (giroCancelado) return;
-                var angulo = CAMERA_ANGULO_INICIAL_GIRO + (passo / N_PASSOS_GIRO) * 2 * Math.PI;
-                Plotly.relayout(gd, {{
-                    'scene.camera.eye': {{
-                        x: CAMERA_RAIO_GIRO * Math.cos(angulo),
-                        y: CAMERA_RAIO_GIRO * Math.sin(angulo),
-                        z: CAMERA_Z_GIRO,
-                    }},
-                }});
-                passo++;
-                if (passo <= N_PASSOS_GIRO) {{ setTimeout(girar, DURACAO_PASSO_GIRO); }}
-            }}
-            girar();
-        }}
-        setTimeout(tocarGiroInicial, 400);
+        setTimeout(tocarGiro, 400);
     }})();
     """
 
