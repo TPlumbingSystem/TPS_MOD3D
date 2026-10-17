@@ -60,7 +60,6 @@ OUT_HTML = Path(__file__).parent / "viewer_3d_taio.html"
 # ../visualizacao_web/gerar_secao_interativa.py, manter as duas em sincronia.
 MARCA_ROXO_ESCURO = "#1B263B"  # nova identidade TAIO -- fundo secundario (era roxo escuro)
 MARCA_ROXO = "#E23D2B"  # nova identidade TAIO -- cor de destaque (era roxo)
-MARCA_AZUL = "#547B8C"  # nova identidade TAIO
 MARCA_NAVY = "#0D1B2A"  # nova identidade TAIO -- fundo principal
 MARCA_CINZA_CLARO = "#F2F4F5"  # nova identidade TAIO
 MARCA_FONTE = "Montserrat, Arial, sans-serif"
@@ -82,8 +81,6 @@ RESOLUCAO_GRID_TOPO = 63  # pontos por eixo, so para o render (nao afeta o GemPy
 EXAGERO_Z = 6.0  # fator de exagero vertical (relevo real e sutil frente a area horizontal)
 BASE_Z_ABSOLUTA = -600.0  # piso do "cubao" -- mesma cota usada em ../scripts/06_gerar_solidos_estilizados_cubao.py
 COR_SILL, COR_DIQUE = "#49B18C", "#AFEC7C"  # paleta do mapa geologico (soleira teal, dique verde claro)
-ESPESSURA_SILL_ESTILIZADA = 400.0  # OBSOLETO (10/08/2026) -- o sill deixou de usar espessura fixa,
-# ver ESPESSURA_MINIMA_SILL/elevacao_serra_alta. Mantido só de referência histórica.
 ESPESSURA_MINIMA_SILL = 27.0  # espessura minima do sill (m) -- mediana real medida em campo (ver
 # CLAUDE.md/05_gerar_solidos_visualizacao.py). So entra em jogo onde a superficie da Serra Alta
 # (base "real" do sill, ver elevacao_serra_alta) fica mais rasa que isso -- evita solido
