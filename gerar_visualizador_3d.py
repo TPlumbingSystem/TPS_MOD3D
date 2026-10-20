@@ -58,10 +58,10 @@ OUT_HTML = Path(__file__).parent / "viewer_3d_taio.html"
 # identidade visual GS Tech (marca do usuario, aplicada por cima do produto --
 # nao mexe em nada do modelo/dados) -- mesma paleta usada em
 # ../visualizacao_web/gerar_secao_interativa.py, manter as duas em sincronia.
-MARCA_ROXO_ESCURO = "#1B263B"  # nova identidade TAIO -- fundo secundario (era roxo escuro)
-MARCA_ROXO = "#E23D2B"  # nova identidade TAIO -- cor de destaque (era roxo)
-MARCA_NAVY = "#0D1B2A"  # nova identidade TAIO -- fundo principal
-MARCA_CINZA_CLARO = "#F2F4F5"  # nova identidade TAIO
+MARCA_ROXO_ESCURO = "#0C2945"  # nova identidade TAIO -- fundo secundario (era roxo escuro)
+MARCA_ROXO = "#13BBE6"  # Signal Cyan -- destaque da interface (vermelho Magma Red so p/ intrusoes)
+MARCA_NAVY = "#071729"  # nova identidade TAIO -- fundo principal
+MARCA_CINZA_CLARO = "#F1F5F9"  # nova identidade TAIO
 MARCA_FONTE = "Montserrat, Arial, sans-serif"
 
 
@@ -943,7 +943,7 @@ def main():
         var logo = document.createElement('img');
         logo.src = 'data:image/png;base64,{logo_b64}';
         logo.style.cssText = 'position:fixed; top:14px; right:18px; width:64px; height:64px; ' +
-            'border-radius:50%; border:2px solid {MARCA_ROXO}; box-shadow:0 0 10px rgba(123,47,255,0.6); z-index:1000;';
+            'border-radius:50%; border:2px solid {MARCA_ROXO}; box-shadow:0 0 10px rgba(19,187,230,0.6); z-index:1000;';
         document.body.appendChild(logo);
         var atribuicao = document.createElement('div');
         atribuicao.textContent = 'Criado por Afonso Henrique de Jesus';
