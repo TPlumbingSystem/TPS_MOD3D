@@ -86,10 +86,10 @@ ESPESSURA_MINIMA_SILL = 27.0  # espessura minima do sill (m) -- mediana real med
 # (base "real" do sill, ver elevacao_serra_alta) fica mais rasa que isso -- evita solido
 # degenerado (quase zero ou invertido) perto de onde o sill aflora/a Serra Alta ja teria sido
 # erodida junto.
-PASSO_DENSIFICACAO = 40.0  # mesma de ../scripts/06_gerar_solidos_estilizados_cubao.py -- so
+PASSO_DENSIFICACAO = 60.0  # mesma de ../scripts/06_gerar_solidos_estilizados_cubao.py -- so
 # pro CORPO SOLIDO do sill/dique (construir_solido), mantido fino de proposito: e o dado
 # cientifico mais importante sempre visivel. NAO usar pro decalque (ver PASSO_DENSIFICACAO_DECAL).
-PASSO_DENSIFICACAO_DECAL = 70.0  # contorno do decalque geologico (so cor/aparencia, nao a forma
+PASSO_DENSIFICACAO_DECAL = 100.0  # contorno do decalque geologico (so cor/aparencia, nao a forma
 # real do corpo) -- mais grosso que PASSO_DENSIFICACAO de proposito, e o maior custo restante
 # por frame de corte (ver historico de reducao de tamanho no CLAUDE.md).
 PASSO_INTERIOR_DECAL = 2100.0  # grade de pontos internos pros decalques geologicos (evita
