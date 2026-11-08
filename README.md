@@ -15,3 +15,8 @@ produtos: [TPS_HUB](https://github.com/TPlumbingSystem/TPS_HUB) (página inicial
 Gerado por `gerar_visualizador_3d.py` (Python, Plotly/GeoPandas) — depende dos dados
 do projeto completo (topografia, polígonos de campo, litologia CPRM), não roda de
 forma standalone fora dessa estrutura; incluído aqui como referência/histórico do código.
+
+## Gerar o modelo
+
+`python gerar_modelo_3d.py` gera `viewer_3d_taio.html` (bloco sólido, corte em X/Y calculado no navegador, ~31 MB).
+`gerar_visualizador_3d.py` agora é só a biblioteca de dados/constantes/construtores de sólido usada pelo gerador e pelo Zoom 3D.
